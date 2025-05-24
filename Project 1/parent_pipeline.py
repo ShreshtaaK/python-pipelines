@@ -4,16 +4,13 @@ import os
 import sys
 import subprocess
 
-# Connect to database
 conn = sqlite3.connect('mydb.sqlite')
 cursor = conn.cursor()
 
-# Step 1: Count records in Customer table
 cursor.execute("SELECT COUNT(*) FROM Customer")
 customer_count = cursor.fetchone()[0]
 print(f"Customer count: {customer_count}")
 
-# Step 2: If count > 500, export Customer data
 if customer_count > 500:
     cursor.execute("SELECT * FROM Customer")
     rows = cursor.fetchall()
@@ -21,20 +18,17 @@ if customer_count > 500:
 
     data = [dict(zip(columns, row)) for row in rows]
 
-    # Save to JSON file (simulate copy to ADLS)
     with open("customer_data.json", "w", encoding='utf-8') as f:
         json.dump(data, f, indent=4)
 
     print("Customer data exported to customer_data.json")
 
-    # Step 3: If count > 600, call child pipeline
     if customer_count > 600:
         print("Triggering child pipeline (product export)...")
         child_script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "child_pipeline.py")
         print(f"Child pipeline path: {child_script_path}")
         print(f"Exists? {os.path.isfile(child_script_path)}")
 
-        # Use subprocess.run for better handling of spaces in paths
         result = subprocess.run([sys.executable, child_script_path], capture_output=True, text=True)
 
         print("Child pipeline output:")

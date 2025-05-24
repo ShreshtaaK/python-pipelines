@@ -1,10 +1,8 @@
 import sqlite3
 
-# Connect to your database
 conn = sqlite3.connect('mydb.sqlite')
 cursor = conn.cursor()
 
-# Insert 700 dummy customer records
 dummy_customers = [
     (f'Customer{i}', f'customer{i}@example.com', 'India') for i in range(4, 704)
 ]
